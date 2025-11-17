@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+  <name>html2pdf</name>
+  <shortname>html2pdf</shortname>
+  <version>1.0.0</version>
+  <author>K3RCS0</author>
+  <license>AGPLv3+</license>
+  <minGlpiVersion>10.0.0</minGlpiVersion>
+  <maxGlpiVersion>11.0.99</maxGlpiVersion>
+  <state>stable</state>
+  <readme>README.md</readme>
+</plugin>

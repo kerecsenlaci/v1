@@ -1,0 +1,143 @@
+{# -----------------------------------------------------------
+   Megjegyzés: a legtöbb mező a ticket.fields-ből jön.
+   Ha egy adat nem áll rendelkezésre, üresen marad.
+   ----------------------------------------------------------- #}
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<style>
+@page {margin: 20mm 15mm 25mm 15mm;}
+footer.pdf-footer {position: fixed; bottom: 0; left: 0; right: 0; height: 18mm; border-top: 1px solid;}
+body {padding:0; margin:0; font-size:8pt;}
+h2   {text-align: center; font-size:10px;}
+table {width: 100%; border: none; margin: 10 0;border-spacing: 5px;}
+thead {text-align: center;}
+td {width: 50%; background-color: #D3D3D3; margin: 5px;}
+.header {width:100%; display: block; text-align: center; margin: 10px 0; font-size:11pt;}
+.subtitle {font-size: 6pt; text-align: center;}
+.issuetitle {padding-top: 5px; padding-bottom: 5px; background-color: #D3D3D3; font-size:10pt;}
+.disc {background-color: #D3D3D3; min-height:60px; margin:5px 0;}
+.cell25 {width:25%; text-align:center;}
+.cell50 {width:50%;}
+</style>
+{# FEJLÉC: checkbox szerint #}
+{% if options is defined and options.show_header %}
+{% set logo_data_uri = logo_data_uri %}
+  <header>
+    {% include '@html2pdf/header.twig' ignore missing %}
+  </header>
+{% endif %}
+{# CÍMSOR: checkbox szerint #}
+{% set main_title = ticket.document_title|default('ÁSZF az OKFŐ által beszerzett ingóságok eü-i szolgáltató részére történő használatba adásáról szóló szerződésekhez') %}
+{% set subtitle   = ticket.document_subtitle|default('Átadás - Átvételi jegyzőkönyv') %}
+{% if options is not defined or options.show_title %}
+<h2>{{ main_title }}</h2>
+<div class="subtitle">{{ subtitle }}</div>
+<br>
+{% endif %}
+{# Cím / Rendelés #}
+{% set issue_title = ticket.name|default(ticket.title|default('')) %}
+{% if issue_title %}
+  <div class="issuetitle">{{ issue_title }}</div>
+{% endif %}
+
+{# Felső, többoszlopos adatblokk (a példa mezőihez igazítva) #}
+<table>
+  <tr>
+    <td>Nyitás dátuma: {{ ticket.date|default('') }}</td>
+    <td>Bejelentő: {{ ticket.requester_name|default('') }}</td>
+  </tr>
+  <tr>
+    <td>Utoljára frissítve: {{ ticket.date_mod|default('') }}</td>
+    <td>Frissítette: {{ ticket.last_updater_name|default('') }}</td>
+  </tr>
+  <tr>
+    <td>Tulajdonlás ideje: {{ ticket.ownership_time|default('') }}</td>
+    <td>Megoldási idő: {{ ticket.resolution_time|default('') }}</td>
+  </tr>
+  <tr>
+    <td>Típus: {{ ticket.type_label|default(ticket.type|default('')) }}</td>
+    <td>Kategória: {{ ticket.category_name|default('') }}</td>
+  </tr>
+  <tr>
+    <td>Státusz: {{ ticket.status_label|default(ticket.status|default('')) }}</td>
+    <td>Igénylés források: {{ ticket.request_source|default('') }}</td>
+  </tr>
+  <tr>
+    <td>Fontosság: {{ ticket.urgency_label|default(ticket.urgency|default('')) }}</td>
+    <td>Elfogadás: {{ ticket.approval_state|default('') }}</td>
+  </tr>
+  <tr>
+    <td>Terhelés: {{ ticket.impact_label|default(ticket.impact|default('')) }}</td>
+    <td>Helyek: {{ ticket.location_name|default('') }}</td>
+  </tr>
+  <tr>
+    <td>Prioritás: {{ ticket.priority_label|default(ticket.priority|default('')) }}</td>
+    <td>Kérelmező: {{ ticket.requester_name|default('') }}</td>
+  </tr>
+  <tr>
+    <td>Igénylő csoportja: {{ ticket.requester_group|default('') }}</td>
+    <td>Ügyeletes: {{ ticket.assigned_tech_name|default('') }}</td>
+  </tr>
+  <tr>
+    <td>Ügyeletes csoport: {{ ticket.assigned_group|default('') }}</td>
+    <td>Szállító: {{ ticket.supplier_name|default('') }}</td>
+  </tr>
+</table>
+
+{# Leírás blokk #}
+<div class="disc">
+  <span>Leírás</span><br>
+  {{ ticket.content|default('')|raw }}
+</div>
+
+{# Reakciók / követések (ha átadod "followups" tömbben) #}
+<h2 style="margin:16px 0 8px 0; font-size:12pt;">Reakciók</h2>
+{% if followups is defined and followups|length > 0 %}
+  <table>
+    <thead>
+      <tr>
+        <th class="cell25">Forrás</th>
+        <th class="cell25">Dátum</th>
+        <th class="cell50">Kérelmező / Megjegyzés</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in followups %}
+        <tr>
+          <td class="cell25">{{ f.source|default('') }}</td>
+          <td class="cell25">{{ f.date|default('') }}</td>
+          <td class="cell50">
+            {% if f.author is defined %}<div><strong>{{ f.author }}</strong></div>{% endif %}
+            {% if f.content is defined %}<div>{{ f.content|raw }}</div>{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div style="color:#666; font-size:10pt;">Nincs megjeleníthető elem</div>
+{% endif %}
+
+{# Bejelentés feladatok / Dokumentumok / Megoldás – üres szakaszok a mintához #}
+<h2 style="margin:16px 0 8px 0; font-size:12pt;">Bejelentés feladatok</h2>
+<div style="color:#666; font-size:10pt;">Nincs megjeleníthető elem</div>
+
+<h2 style="margin:16px 0 8px 0; font-size:12pt;">Dokumentumok</h2>
+<div style="color:#666; font-size:10pt;">Nincs megjeleníthető elem</div>
+
+<h2 style="margin:16px 0 8px 0; font-size:12pt;">Megoldás</h2>
+<div style="color:#666; font-size:10pt;">Nincs megjeleníthető elem</div>
+{# LÁBLÉC: checkbox szerint #}
+{% if options is defined and options.show_footer %}
+  <footer class="pdf-footer">
+    {% set company_website = 'https://glpi.okfo.gov.hu' %}
+    {% set footer_wording = 'Jelen dokumentum az Országos Kórházi Főigazgatóság Ágazati HelpDesk GLPI jegykezető rendszerből készült.' %}
+    {% include '@html2pdf/footer.twig' ignore missing %}
+  </footer>
+{% endif %}
+</body>
+</html>

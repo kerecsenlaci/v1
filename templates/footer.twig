@@ -1,0 +1,19 @@
+{# Lábléc – webcím, e-mail, telefon, cím #}
+{% set website = company_website|default('https://pelda.hu') %}
+{% set wording   = company_email|default('Ez a dokumentum a GLPI rendszerből generálódott.') %}
+
+<div style="width:100%; border-top:1px solid #ddd; margin-top:20px; padding-top:8px; font-size:10pt;">
+  <table style="width:100%; border-collapse:collapse;">
+    <tr>
+      <td style="width:75%; vertical-align:top;">
+        <p style="text-decoration:none; color:#000;">{{ wording }}</p>
+      </td>
+      <td style="width:25%; vertical-align:top;">
+        <strong>Web:</strong><br/>
+        <a href="{{ website }}" style="text-decoration:none; color:#000;">{{ website }}</a>
+      </td>
+    </tr>
+  </table>
+</div>
+{# Oldalszám #}
+
